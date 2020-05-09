@@ -1,0 +1,42 @@
+#app{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.searchBar{
+    width:100%;
+    border: dotted 2px turquoise;
+    text-align: center;
+    height:40px;
+    margin-bottom: 10px;
+}
+.searchBar > *{
+    width:100%;
+    text-align:center;  
+    font-size: larger;
+    min-height: 40px;
+}
+.userContainer{
+    width:100%;
+}
+.user{
+    display:flex;
+    flex-direction: row;
+    flex-grow: 1;
+    border:solid 1px black;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    max-height: 50px;
+}
+.image{
+    max-height: 50px;
+}
+.userSelected{
+    display:flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    background-color: yellow;;
+}
