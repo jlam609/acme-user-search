@@ -1,25 +1,31 @@
-const loadUsers = () => {
-window.fetch('https://acme-users-api-rev.herokuapp.com/api/users')
+const tbody = document.querySelector('tbody')
+const body = document.querySelector('.bodyContainer')
+const loadUser = () => {
+window.fetch(`https://acme-users-api-rev.herokuapp.com/api/users`)
 .then(res => res.json())
-.then(res => createUser(res))
-.then(()=> {
-    return window.fetch('https://acme-users-api-rev.herokuapp.com/api/users/1')
+.then(data => {
+    const htmlString = data.users.map(elem => {
+        return `<tr class = 'user'>
+        <td>${elem.firstName}</td>
+        <td>${elem.lastName}</td>
+        <td>${elem.email}</td>
+        <td>${elem.title}</td>
+        <td><img src=${elem.avatar} class ='image'></td>
+        </tr>`
+    })
+    .join('')
+    tbody.innerHTML = htmlString
 })
-.then(res => res.json())
-.then(res => createUser(res))
-.then(()=> window.fetch('https://acme-users-api-rev.herokuapp.com/api/users/2'))
-.then(res => res.json())
-.then(res => createUser(res))
-.catch(e => console.log('Fetch Error', e))
+.catch(e => console.log('error', e))
 }
-const app = document.getElementById('app')
+
 const createHeader = () => {
     const headerContainer = document.createElement('div')
     const headerText = document.createElement('h1')
     headerText.innerHTML = 'ACME User Search'
     headerContainer.classList.add('headerContainer')
     headerContainer.append(headerText)
-    app.append(headerContainer)
+    body.append(headerContainer)
 }
 const createSearchBar = () => {
     const searchContainer = document.createElement('div')
@@ -29,18 +35,30 @@ const createSearchBar = () => {
     searchContainer.classList.add('searchBar')
     searchBar.addEventListener('keyup', e => {
         e.stopPropagation()
-        let value = e.target.value.toLowerCase()
-        userContainer.childNodes.forEach(elem => {
-            if (value !== '' && elem.innerHTML.toLowerCase().includes(value)) {
-                elem.classList = 'userSelected'
-            }
-            else elem.classList = 'user'
-        })
+        let value = e.target.value
+        window.location.hash = value
+        if (value !== ''){
+            window.fetch(`https://acme-users-api-rev.herokuapp.com/api/users/search/${value}`)
+            .then(res => res.json())
+            .then(data => {
+                const htmlString = data.users.map(elem => {
+                    return `<tr class = 'user'>
+                    <td>${elem.firstName}</td>
+                    <td>${elem.lastName}</td>
+                    <td>${elem.email}</td>
+                    <td>${elem.title}</td>
+                    <td><img src=${elem.avatar} class ='image'></td>
+                    </tr>`
+                })
+                .join('')
+                tbody.innerHTML = htmlString
+            })
+            .catch(e => console.log('error', e))
+        }
     })
     searchContainer.append(searchBar)
-    app.append(searchContainer)
+    body.append(searchContainer)
 }
-
 const createClearButton = () => {
     const clearContainer = document.createElement('div')
     const clearButton = document.createElement('button')
@@ -48,43 +66,17 @@ const createClearButton = () => {
     clearButton.innerHTML = 'Clear'
     clearButton.addEventListener('click', ev => {
         ev.stopPropagation()
-        reset();
+        reset()
         render()
     })
     clearContainer.append(clearButton)
-    app.append(clearContainer)
+    body.append(clearContainer)
 }
-const createUser = (users) => {
-    for (let user in users){
-        let totalUsers = users[user]
-    for (let each in totalUsers){
-        let eachUser = totalUsers[each]
-        const user = document.createElement('div')
-        user.innerHTML =  
-        `<div class = 'user'>
-        <h2> Name:${eachUser.fullName}</h2>
-        <p> Email:${eachUser.email}</p>
-        <p> Title:${eachUser.title}</p>
-        <img src=${eachUser.avatar} class=image>
-        </div>`
-        userContainer.append(user)
-    }
-    }
-}
-const userContainer = document.createElement('div')
-userContainer.classList.add('userContainer')
-const reset = () => {
-    userContainer.childNodes.forEach(elem => {
-       elem.classList = 'user'
-    })
-
-}
+const reset = () => body.innerHTML = ''
 const render = () => {
-    app.innerHTML = ''
-    createHeader()
-    createSearchBar()
-    createClearButton()
-    loadUsers()
-    app.append(userContainer)
+createHeader()
+createSearchBar()
+createClearButton()
+loadUser()
 }
 render()
