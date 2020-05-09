@@ -1,14 +1,16 @@
 const loadUsers = () => {
 window.fetch('https://acme-users-api-rev.herokuapp.com/api/users')
-.then(res => {
-    return res.json()
+.then(res => res.json())
+.then(res => createUser(res))
+.then(()=> {
+    return window.fetch('https://acme-users-api-rev.herokuapp.com/api/users/1')
 })
-.then(res => {
-    const users = createUser(res)
-})
-.catch(e => {
-    console.log('Fetch Error', e)
-})
+.then(res => res.json())
+.then(res => createUser(res))
+.then(()=> window.fetch('https://acme-users-api-rev.herokuapp.com/api/users/2'))
+.then(res => res.json())
+.then(res => createUser(res))
+.catch(e => console.log('Fetch Error', e))
 }
 const app = document.getElementById('app')
 const createHeader = () => {
@@ -42,6 +44,7 @@ const createSearchBar = () => {
 const createClearButton = () => {
     const clearContainer = document.createElement('div')
     const clearButton = document.createElement('button')
+    clearContainer.classList.add('clearButton')
     clearButton.innerHTML = 'Clear'
     clearButton.addEventListener('click', ev => {
         ev.stopPropagation()
